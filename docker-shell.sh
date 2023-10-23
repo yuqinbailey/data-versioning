@@ -3,8 +3,8 @@
 set -e
 
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../secrets/
-export GCS_BUCKET_NAME="mushroom-app-data-demo"
+export SECRETS_DIR=$(pwd)/../AC215_S2S/src/secrets/
+export GCS_BUCKET_NAME="s2s_data"
 export GCP_PROJECT="ac215-project"
 export GCP_ZONE="us-central1-a"
 
