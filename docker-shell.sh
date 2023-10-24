@@ -2,25 +2,24 @@
 
 set -e
 
+export IMAGE_NAME=dvc-docker-image
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../AC215_S2S/src/secrets/
+export SSH_DIR=$HOME/.ssh
 export GCS_BUCKET_NAME="s2s_data"
 export GCP_PROJECT="ac215-project"
 export GCP_ZONE="us-central1-a"
 
-# Create the network if we don't have it yet
-docker network inspect data-versioning-network >/dev/null 2>&1 || docker network create data-versioning-network
 
 # Build the image based on the Dockerfile
-docker build -t data-version-cli --platform=linux/arm64/v8 -f Dockerfile .
+docker build -t $IMAGE_NAME -f Dockerfile .
 
-# Run Container
-docker run --rm --name data-version-cli -ti \
+sudo docker run --rm --name $IMAGE_NAME --privileged  -ti \
 -v "$BASE_DIR":/app \
 -v "$SECRETS_DIR":/secrets \
--v ~/.gitconfig:/etc/gitconfig \
--e GOOGLE_APPLICATION_CREDENTIALS=/secrets/data-service-account.json \
+-v "$SSH_DIR":/home/app/.ssh \
+-e GOOGLE_APPLICATION_CREDENTIALS=/secrets/dvc-secrets.json \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCP_ZONE=$GCP_ZONE \
--e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
---network data-versioning-network data-version-cli
+-e GCS_BUCKET_URI=$GCS_BUCKET_URI \
+$IMAGE_NAME
